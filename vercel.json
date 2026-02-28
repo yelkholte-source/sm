@@ -6,7 +6,6 @@
   "env": {
     "NEXT_PUBLIC_API_URL": "@next_public_api_url"
   },
-  "envPrefix": "NEXT_PUBLIC_",
   "framework": "nextjs",
   "regions": ["lhr1", "iad1", "sfo1"],
   "functions": {
