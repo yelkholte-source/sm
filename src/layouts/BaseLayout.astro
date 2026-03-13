@@ -1,0 +1,104 @@
+---
+/**
+ * BaseLayout
+ * Main layout wrapper for all pages
+ * Handles header, footer, theme persistence, scroll reveal animations
+ */
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BackToTop from '../components/BackToTop.astro';
+import ResumeExport from '../components/ResumeExport.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Portfolio', description = 'Professional portfolio website' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0f1e" />
+    <title>{title}</title>
+
+    <!-- Prevent FOUC (Flash of Unstyled Content) -->
+    <script>
+      // Load theme before page renders
+      (function () {
+        const saved = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        if (saved === 'light') {
+          const metaTheme = document.querySelector('meta[name="theme-color"]');
+          if (metaTheme) metaTheme.setAttribute('content', '#f8fafc');
+        }
+      })();
+    </script>
+
+    <!-- Vercel Analytics -->
+    <script is:inline src="/_vercel/insights/script.js"></script>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <Header />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <BackToTop />
+    
+    <ResumeExport />
+
+    <!-- Scroll Reveal Observer -->
+    <script>
+      /**
+       * Intersection Observer for scroll animations
+       * Adds 'visible' class to elements with .animate-scroll
+       */
+
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              // Optional: stop observing after animation
+              // observer.unobserve(entry.target);
+            }
+          });
+        },
+        observerOptions
+      );
+
+      // Observe all elements with animate-scroll class
+      document.querySelectorAll('.animate-scroll').forEach((el) => {
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+  }
+
+  main {
+    position: relative;
+    overflow-x: hidden;
+  }
+</style>

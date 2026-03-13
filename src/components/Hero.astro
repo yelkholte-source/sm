@@ -1,0 +1,512 @@
+---
+/**
+ * Hero Section Component
+ * Features: Gradient animated name, profile photo, CTA buttons, stats bar, scroll indicator
+ */
+
+import { portfolioData } from '../data/portfolio';
+
+const { personal, statistics, socialProfiles } = portfolioData;
+
+// Icon mapping
+const icons: Record<string, string> = {
+  github: 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22',
+  linkedin: 'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z M4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+  mail: 'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z M22 6l-10 7L2 6',
+  download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3',
+  arrow: 'M5 12h14M12 5l7 7-7 7',
+  mouse: 'M12 3v6m0 4v4M8 7a4 4 0 0 1 8 0v6a4 4 0 0 1-8 0V7z',
+};
+
+function getSvgPath(iconName: string): string {
+  return icons[iconName] || icons.arrow;
+}
+---
+
+<section id="home" class="hero">
+  <div class="hero__container">
+    <div class="hero__content">
+      <div class="hero__greeting">Welcome to my portfolio</div>
+
+      <h1 class="hero__title">
+        <span class="hero__name text-gradient-animate">{personal.firstName} {personal.lastName}</span>
+      </h1>
+
+      <div class="hero__subtitle">{personal.title}</div>
+
+      <p class="hero__description">{personal.subtitle}</p>
+
+      <div class="hero__availability">
+        <div class="hero__availability-dot"></div>
+        <span>Disponible pour un stage</span>
+      </div>
+
+      <div class="hero__cta-buttons">
+        <button class="btn btn-primary" id="view-projects">
+          <svg viewBox="0 0 24 24">
+            <path d={getSvgPath('arrow')} />
+          </svg>
+          Voir mes Projets
+        </button>
+        <button class="btn btn-secondary" id="download-resume">
+          <svg viewBox="0 0 24 24">
+            <path d={getSvgPath('download')} />
+          </svg>
+          Télécharger mon CV
+        </button>
+      </div>
+
+      <div class="hero__socials">
+        {
+          socialProfiles.map((profile) => (
+            <a
+              href={profile.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hero__social-pill"
+              title={profile.name}
+            >
+              <svg viewBox="0 0 24 24">
+                <path d={getSvgPath(profile.icon)} />
+              </svg>
+              <span>{profile.name}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="hero__visual">
+      <div class="hero__profile-frame">
+        <img src={personal.avatar} alt={personal.firstName} class="hero__profile-img" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Bar -->
+  <div class="hero__stats">
+    {
+      statistics.map((stat) => (
+        <div class="hero__stat">
+          <div class="hero__stat-value text-gradient">{stat.value}</div>
+          <div class="hero__stat-label">{stat.label}</div>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="hero__scroll">
+    <svg viewBox="0 0 24 24" class="hero__mouse">
+      <path d={getSvgPath('mouse')} />
+    </svg>
+  </div>
+</section>
+
+<style>
+  /* ====== HERO SECTION ====== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-4xl) var(--spacing-md);
+    position: relative;
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+      min-height: auto;
+      padding: 6rem var(--spacing-md) var(--spacing-2xl);
+    }
+  }
+
+  .hero__container {
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4xl);
+    align-items: center;
+    margin-bottom: var(--spacing-4xl);
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-2xl);
+      margin-bottom: var(--spacing-2xl);
+    }
+  }
+
+  /* ====== HERO CONTENT ====== */
+  .hero__greeting {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 50px;
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: var(--spacing-lg);
+    animation: slideInUp 0.6s ease-out;
+
+    @media (max-width: 768px) {
+      margin-bottom: var(--spacing-md);
+    }
+  }
+
+  .hero__title {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    line-height: 1.1;
+    font-weight: 900;
+    margin-bottom: var(--spacing-sm);
+    animation: slideInUp 0.6s ease-out 0.1s backwards;
+
+    @media (max-width: 768px) {
+      font-size: clamp(2rem, 6vw, 3rem);
+    }
+  }
+
+  .hero__name {
+    display: block;
+  }
+
+  .hero__subtitle {
+    font-size: var(--size-2xl);
+    font-weight: 300;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+    animation: slideInUp 0.6s ease-out 0.2s backwards;
+
+    @media (max-width: 768px) {
+      font-size: var(--size-lg);
+    }
+  }
+
+  .hero__description {
+    font-size: var(--size-lg);
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-xl);
+    max-width: 600px;
+    animation: slideInUp 0.6s ease-out 0.3s backwards;
+
+    @media (max-width: 768px) {
+      font-size: var(--size-base);
+      margin-bottom: var(--spacing-lg);
+    }
+  }
+
+  /* ====== AVAILABILITY BADGE ====== */
+  .hero__availability {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.75rem 1rem;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 50px;
+    font-size: 0.875rem;
+    color: var(--color-success);
+    font-weight: 500;
+    margin-bottom: var(--spacing-lg);
+    animation: slideInUp 0.6s ease-out 0.4s backwards;
+  }
+
+  .hero__availability-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-success);
+    border-radius: 50%;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* ====== CTA BUTTONS ====== */
+  .hero__cta-buttons {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    animation: slideInUp 0.6s ease-out 0.5s backwards;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    @media (max-width: 480px) {
+      button {
+        width: 100%;
+
+        svg {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .hero__cta-buttons .btn {
+    svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  /* ====== SOCIAL PILLS ====== */
+  .hero__socials {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    animation: slideInUp 0.6s ease-out 0.6s backwards;
+
+    @media (max-width: 768px) {
+      gap: var(--spacing-sm);
+    }
+  }
+
+  .hero__social-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(15, 22, 41, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+
+    html[data-theme='light'] & {
+      background: rgba(241, 245, 249, 0.7);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @media (max-width: 480px) {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      gap: 4px;
+
+      span {
+        display: none;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  /* ====== HERO VISUAL ====== */
+  .hero__visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: slideInUp 0.6s ease-out 0.2s backwards;
+
+    @media (max-width: 768px) {
+      order: -1;
+      margin-bottom: var(--spacing-lg);
+    }
+  }
+
+  .hero__profile-frame {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    animation: hueRotate 20s linear infinite;
+
+    @media (max-width: 768px) {
+      width: 240px;
+      height: 240px;
+    }
+
+    @media (max-width: 480px) {
+      width: 180px;
+      height: 180px;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      background: var(--gradient-primary);
+      border-radius: 50%;
+      opacity: 0.7;
+      filter: blur(20px);
+      z-index: -1;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 2px solid var(--color-primary);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: borderPulse 3s ease-in-out infinite;
+    }
+  }
+
+  .hero__profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    .hero__profile-frame:hover & {
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes hueRotate {
+    0% {
+      filter: hue-rotate(0deg);
+    }
+    100% {
+      filter: hue-rotate(360deg);
+    }
+  }
+
+  @keyframes borderPulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.3;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.6;
+    }
+  }
+
+  /* ====== STATISTICS BAR ====== */
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-xl);
+    width: 100%;
+    max-width: 1200px;
+    padding: var(--spacing-2xl);
+    background: rgba(15, 22, 41, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-4xl);
+    animation: slideInUp 0.6s ease-out 0.7s backwards;
+
+    html[data-theme='light'] & {
+      background: rgba(241, 245, 249, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-2xl);
+    }
+
+    @media (max-width: 480px) {
+      gap: var(--spacing-md);
+      padding: var(--spacing-md);
+    }
+  }
+
+  .hero__stat {
+    text-align: center;
+
+    @media (max-width: 480px) {
+      text-align: left;
+    }
+  }
+
+  .hero__stat-value {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+
+    @media (max-width: 480px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  .hero__stat-label {
+    font-size: var(--size-sm);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+  }
+
+  /* ====== SCROLL INDICATOR ====== */
+  .hero__scroll {
+    display: flex;
+    justify-content: center;
+    animation: bounceVertical 2s ease-in-out infinite;
+  }
+
+  .hero__mouse {
+    width: 24px;
+    height: 24px;
+    stroke: var(--color-text-muted);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounceVertical {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(10px);
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Hero Component JavaScript
+   * Handles button actions
+   */
+
+  const viewProjectsBtn = document.getElementById('view-projects');
+  const downloadResumeBtn = document.getElementById('download-resume');
+
+  viewProjectsBtn?.addEventListener('click', () => {
+    const projectsSection = document.getElementById('projects');
+    if (projectsSection) {
+      projectsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  downloadResumeBtn?.addEventListener('click', () => {
+    // Dispatch custom event for BaseLayout to handle modal
+    window.dispatchEvent(new CustomEvent('openResumeModal'));
+  });
+</script>

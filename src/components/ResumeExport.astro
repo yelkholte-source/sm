@@ -1,0 +1,596 @@
+---
+/**
+ * Resume Export Component
+ * Modal for exporting portfolio as PDF or Word document
+ */
+
+import { portfolioData, getResumeData } from '../data/portfolio';
+
+const resumeData = getResumeData();
+const pdfIcon = 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M16 9H8';
+const docxIcon = 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M10 12l-2 4 2 4 M14 12l2 4-2 4';
+const closeIcon = 'M18 6L6 18M6 6l12 12';
+const downloadIcon = 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3';
+---
+
+<div id="resume-modal" class="resume-modal">
+  <div class="resume-modal__content">
+    <button class="resume-modal__close" id="resume-close">
+      <svg viewBox="0 0 24 24">
+        <path d={closeIcon} />
+      </svg>
+    </button>
+
+    <div class="resume-modal__header">
+      <h2>Export Resume</h2>
+      <p>Choose your preferred format</p>
+    </div>
+
+    <div class="resume-modal__options">
+      <button class="resume-modal__option" id="export-pdf">
+        <div class="resume-modal__icon resume-modal__icon--pdf">
+          <svg viewBox="0 0 24 24">
+            <path d={pdfIcon} />
+          </svg>
+        </div>
+        <div class="resume-modal__text">
+          <h3>PDF Document</h3>
+          <p>Best for online applications & email</p>
+          <span class="resume-modal__badge">PDF</span>
+        </div>
+        <svg class="resume-modal__arrow" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <button class="resume-modal__option" id="export-docx">
+        <div class="resume-modal__icon resume-modal__icon--docx">
+          <svg viewBox="0 0 24 24">
+            <path d={docxIcon} />
+          </svg>
+        </div>
+        <div class="resume-modal__text">
+          <h3>Word Document</h3>
+          <p>Best for editing & ATS systems</p>
+          <span class="resume-modal__badge">DOCX</span>
+        </div>
+        <svg class="resume-modal__arrow" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="resume-modal__status" id="export-status" style="display: none;">
+      <div class="resume-modal__spinner"></div>
+      <span>Generating document...</span>
+    </div>
+  </div>
+
+  <div class="resume-modal__backdrop" id="resume-backdrop"></div>
+</div>
+
+<style>
+  .resume-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  .resume-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: -1;
+  }
+
+  .resume-modal__content {
+    position: relative;
+    background: rgba(15, 22, 41, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+
+    html[data-theme='light'] & {
+      background: rgba(248, 250, 252, 0.95);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 640px) {
+      padding: var(--spacing-lg);
+      width: 95%;
+    }
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .resume-modal__close {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  .resume-modal__header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+
+    h2 {
+      font-size: var(--size-2xl);
+      margin-bottom: var(--spacing-md);
+      color: var(--color-text);
+    }
+
+    p {
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+  }
+
+  .resume-modal__options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .resume-modal__option {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-items: center;
+    text-align: left;
+
+    html[data-theme='light'] & {
+      background: rgba(0, 0, 0, 0.02);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    &:hover {
+      border-color: var(--color-primary);
+      background: rgba(59, 130, 246, 0.1);
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  .resume-modal__icon {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+
+    &--pdf {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    &--docx {
+      background: rgba(37, 99, 235, 0.1);
+      color: #2563eb;
+    }
+
+    svg {
+      width: 28px;
+      height: 28px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  .resume-modal__text {
+    flex: 1;
+  }
+
+  .resume-modal__text h3 {
+    font-size: var(--size-base);
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--color-text);
+  }
+
+  .resume-modal__text p {
+    font-size: var(--size-sm);
+    color: var(--color-text-secondary);
+    margin: 0 0 8px;
+  }
+
+  .resume-modal__badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+  }
+
+  .resume-modal__arrow {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .resume-modal__option:hover .resume-modal__arrow {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+
+  .resume-modal__status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    color: var(--color-text-secondary);
+  }
+
+  .resume-modal__spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<script define:vars={{ resumeData: JSON.stringify(resumeData) }}>
+  /**
+   * Resume Export JavaScript
+   * Handles PDF and DOCX generation and download
+   */
+
+  const modal = document.getElementById('resume-modal');
+  const backdrop = document.getElementById('resume-backdrop');
+  const closeBtn = document.getElementById('resume-close');
+  const pdfBtn = document.getElementById('export-pdf');
+  const docxBtn = document.getElementById('export-docx');
+  const status = document.getElementById('export-status');
+
+  // Open modal on custom event
+  window.addEventListener('openResumeModal', () => {
+    modal?.classList.add('show');
+  });
+
+  // Close modal
+  function closeModal() {
+    modal?.classList.remove('show');
+  }
+
+  closeBtn?.addEventListener('click', closeModal);
+  backdrop?.addEventListener('click', closeModal);
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('show')) {
+      closeModal();
+    }
+  });
+
+  // Export to PDF
+  pdfBtn?.addEventListener('click', async () => {
+    try {
+      status.style.display = 'flex';
+
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const data = JSON.parse(resumeData);
+      let yPosition = 15;
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 15;
+      const lineHeight = 5;
+
+      // Title
+      doc.setFontSize(20);
+      doc.text(data.fullName, margin, yPosition);
+      yPosition += 8;
+
+      // Contact info
+      doc.setFontSize(9);
+      const contactInfo = [data.email, data.phone, data.location].filter(Boolean).join(' • ');
+      doc.text(contactInfo, margin, yPosition);
+      yPosition += 6;
+
+      // Title and subtitle
+      doc.setFontSize(11);
+      doc.text(data.title, margin, yPosition);
+      yPosition += 8;
+
+      // Helper function to add section
+      function addSection(title, content) {
+        if (yPosition + 10 > pageHeight - 10) {
+          doc.addPage();
+          yPosition = 15;
+        }
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text(title, margin, yPosition);
+        yPosition += 6;
+
+        doc.setFont(undefined, 'normal');
+        return content;
+      }
+
+      // Experience
+      if (data.experience.length > 0) {
+        addSection('EXPERIENCE', null);
+        data.experience.forEach((exp) => {
+          if (yPosition + 12 > pageHeight - 10) {
+            doc.addPage();
+            yPosition = 15;
+          }
+          doc.setFontSize(10);
+          doc.setFont(undefined, 'bold');
+          doc.text(exp.role, margin, yPosition);
+          yPosition += 4;
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(9);
+          doc.text(exp.company, margin, yPosition);
+          yPosition += 3;
+          doc.setFontSize(8);
+          doc.text(exp.startDate + ' - ' + (exp.endDate || 'Present'), margin, yPosition);
+          yPosition += 4;
+          doc.setFontSize(9);
+          const splitDesc = doc.splitTextToSize(exp.description, 180);
+          doc.text(splitDesc, margin, yPosition);
+          yPosition += splitDesc.length * 3 + 4;
+        });
+      }
+
+      // Education
+      if (data.education.length > 0) {
+        addSection('EDUCATION', null);
+        data.education.forEach((edu) => {
+          if (yPosition + 10 > pageHeight - 10) {
+            doc.addPage();
+            yPosition = 15;
+          }
+          doc.setFontSize(10);
+          doc.setFont(undefined, 'bold');
+          doc.text(edu.degree, margin, yPosition);
+          yPosition += 4;
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(9);
+          doc.text(edu.field + ' - ' + edu.institution, margin, yPosition);
+          yPosition += 3;
+          doc.setFontSize(8);
+          doc.text(edu.startDate + ' - ' + edu.endDate, margin, yPosition);
+          yPosition += 6;
+        });
+      }
+
+      // Skills
+      if (data.technicalSkills.length > 0) {
+        addSection('SKILLS', null);
+        data.technicalSkills.forEach((skillGroup) => {
+          if (yPosition + 8 > pageHeight - 10) {
+            doc.addPage();
+            yPosition = 15;
+          }
+          doc.setFontSize(9);
+          doc.setFont(undefined, 'bold');
+          doc.text(skillGroup.category + ':', margin, yPosition);
+          doc.setFont(undefined, 'normal');
+          doc.text(skillGroup.skills.join(', '), margin + 10, yPosition);
+          yPosition += 5;
+        });
+      }
+
+      const fileName = data.fullName.replace(/\s+/g, '_') + '_Resume.pdf';
+      doc.save(fileName);
+
+      status.style.display = 'none';
+      closeModal();
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('Failed to generate PDF. Please try again.');
+      status.style.display = 'none';
+    }
+  });
+
+  // Export to DOCX
+  docxBtn?.addEventListener('click', async () => {
+    try {
+      status.style.display = 'flex';
+
+      const { Document, Packer, Paragraph, TextRun, AlignmentType, TabStopType, TabStopPosition } = await import('docx');
+      const { saveAs } = await import('file-saver');
+
+      const data = JSON.parse(resumeData);
+
+      const doc = new Document({
+        sections: [
+          {
+            children: [
+              new Paragraph({
+                text: data.fullName,
+                alignment: AlignmentType.CENTER,
+                size: 32,
+                bold: true,
+              }),
+              new Paragraph({
+                text: data.title,
+                alignment: AlignmentType.CENTER,
+                size: 22,
+              }),
+              new Paragraph({
+                text: [data.email, data.phone, data.location].filter(Boolean).join(' • '),
+                alignment: AlignmentType.CENTER,
+                size: 20,
+              }),
+              new Paragraph({ text: '' }),
+
+              // Experience
+              ...(data.experience.length > 0
+                ? [
+                    new Paragraph({
+                      text: 'EXPERIENCE',
+                      size: 24,
+                      bold: true,
+                    }),
+                    ...data.experience.flatMap((exp) => [
+                      new Paragraph({
+                        text: exp.role,
+                        bold: true,
+                      }),
+                      new Paragraph({
+                        text: exp.company + ' • ' + exp.startDate + ' - ' + (exp.endDate || 'Present'),
+                        italics: true,
+                      }),
+                      new Paragraph({
+                        text: exp.description,
+                        spacing: { after: 100 },
+                      }),
+                    ]),
+                  ]
+                : []),
+
+              // Education
+              ...(data.education.length > 0
+                ? [
+                    new Paragraph({
+                      text: 'EDUCATION',
+                      size: 24,
+                      bold: true,
+                    }),
+                    ...data.education.flatMap((edu) => [
+                      new Paragraph({
+                        text: edu.degree,
+                        bold: true,
+                      }),
+                      new Paragraph({
+                        text: edu.field + ', ' + edu.institution,
+                        italics: true,
+                      }),
+                      new Paragraph({
+                        text: edu.startDate + ' - ' + edu.endDate,
+                        spacing: { after: 100 },
+                      }),
+                    ]),
+                  ]
+                : []),
+
+              // Skills
+              ...(data.technicalSkills.length > 0
+                ? [
+                    new Paragraph({
+                      text: 'SKILLS',
+                      size: 24,
+                      bold: true,
+                    }),
+                    ...data.technicalSkills.map(
+                      (skillGroup) =>
+                        new Paragraph({
+                          text: skillGroup.category + ': ' + skillGroup.skills.join(', '),
+                          spacing: { after: 100 },
+                        })
+                    ),
+                  ]
+                : []),
+            ],
+          },
+        ],
+      });
+
+      const blob = await Packer.toBlob(doc);
+      const fileName = data.fullName.replace(/\s+/g, '_') + '_Resume.docx';
+      saveAs(blob, fileName);
+
+      status.style.display = 'none';
+      closeModal();
+    } catch (error) {
+      console.error('DOCX generation error:', error);
+      alert('Failed to generate Word document. Please try again.');
+      status.style.display = 'none';
+    }
+  });
+</script>

@@ -1,0 +1,112 @@
+---
+/**
+ * Back-to-Top Component
+ * Floating button that appears on scroll
+ */
+
+const arrowIcon = 'M12 5v14M5 12l7-7 7 7';
+---
+
+<button id="back-to-top" class="back-to-top" aria-label="Back to top">
+  <svg viewBox="0 0 24 24">
+    <path d={arrowIcon} />
+  </svg>
+</button>
+
+<style>
+  .back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 22, 41, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 50;
+
+    html[data-theme='light'] & {
+      background: rgba(248, 250, 252, 0.8);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    &.show {
+      opacity: 1;
+      pointer-events: auto;
+      animation: slideInUp 0.3s ease-out;
+    }
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+      transform: translateY(-4px);
+    }
+
+    &:active {
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 40px;
+      height: 40px;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Back-to-Top Button JavaScript
+   * Handles visibility and scroll behavior
+   */
+
+  const backToTopBtn = document.getElementById('back-to-top');
+
+  function toggleBackToTop() {
+    if (window.scrollY > 500) {
+      backToTopBtn?.classList.add('show');
+    } else {
+      backToTopBtn?.classList.remove('show');
+    }
+  }
+
+  window.addEventListener('scroll', toggleBackToTop, { passive: true });
+
+  backToTopBtn?.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  });
+</script>

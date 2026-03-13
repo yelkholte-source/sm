@@ -1,0 +1,29 @@
+---
+/**
+ * Index Page
+ * Main portfolio page - dynamically renders sections based on available data
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Skills from '../components/Skills.astro';
+import Education from '../components/Education.astro';
+import Experience from '../components/Experience.astro';
+import Projects from '../components/Projects.astro';
+import Contact from '../components/Contact.astro';
+import { portfolioData } from '../data/portfolio';
+
+const title = `${portfolioData.personal.firstName} ${portfolioData.personal.lastName} - Portfolio`;
+const description = portfolioData.personal.subtitle;
+---
+
+<BaseLayout title={title} description={description}>
+  <Hero />
+  <About />
+  <Skills />
+  <Education />
+  {portfolioData.experience.length > 0 && <Experience />}
+  {portfolioData.projects.length > 0 && <Projects />}
+  <Contact />
+</BaseLayout>

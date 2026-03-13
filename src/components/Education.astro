@@ -1,0 +1,277 @@
+---
+/**
+ * Education Section Component
+ * Timeline display of educational background
+ */
+
+import { portfolioData } from '../data/portfolio';
+
+const { education } = portfolioData;
+
+const externalLinkIcon = 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14l8.5-8.5';
+---
+
+{
+  education.length > 0 && (
+    <section id="education" class="education section">
+      <div class="container">
+        <div class="education__header">
+          <h2>Education</h2>
+          <p>My academic journey and learning path</p>
+        </div>
+
+        <div class="education__timeline">
+          {education.map((edu, index) => (
+            <div class="education__item animate-scroll">
+              <div class="education__marker">
+                {index === 0 && <span class="education__latest">Latest</span>}
+              </div>
+              <div class="education__content">
+                <div class="education__header-meta">
+                  <span class="education__period">{edu.startDate} - {edu.endDate}</span>
+                </div>
+                <h3 class="education__title">{edu.degree}</h3>
+                <div class="education__institution-box">
+                  <span class="education__field">{edu.field}</span>
+                  <a
+                    href={edu.institutionUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="education__link"
+                  >
+                    <span>{edu.institution}</span>
+                    <svg viewBox="0 0 24 24">
+                      <path d={externalLinkIcon} />
+                    </svg>
+                  </a>
+                </div>
+                {edu.description && (
+                  <p class="education__description">{edu.description}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .education {
+    background: linear-gradient(135deg, rgba(10, 15, 30, 0.5), rgba(20, 29, 47, 0.5));
+  }
+
+  .education__header {
+    text-align: center;
+    margin-bottom: var(--spacing-4xl);
+    animation: slideInUp 0.6s ease-out;
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: var(--spacing-md);
+      background: var(--gradient-text);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      font-size: var(--size-lg);
+      color: var(--color-text-secondary);
+    }
+  }
+
+  .education__timeline {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, var(--color-primary), var(--color-accent), transparent);
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+  }
+
+  .education__item {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+    position: relative;
+
+    @media (max-width: 768px) {
+      gap: var(--spacing-md);
+    }
+
+    &.visible {
+      animation: slideInUp 0.6s ease-out forwards;
+    }
+  }
+
+  .education__marker {
+    position: relative;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--color-primary);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1));
+      box-shadow: 0 0 0 4px var(--color-bg);
+      animation: markerGlow 2s ease-in-out infinite;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+  }
+
+  @keyframes markerGlow {
+    0%,
+    100% {
+      box-shadow: 0 0 0 4px var(--color-bg), 0 0 15px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 0 4px var(--color-bg), 0 0 25px rgba(59, 130, 246, 0.5);
+    }
+  }
+
+  .education__latest {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 8px;
+    background: var(--color-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .education__content {
+    flex: 1;
+    padding: var(--spacing-lg);
+    background: rgba(15, 22, 41, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    transition: all 0.3s ease;
+
+    html[data-theme='light'] & {
+      background: rgba(241, 245, 249, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      border-left: 3px solid var(--color-primary);
+    }
+
+    &:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+      transform: translateX(4px);
+
+      @media (max-width: 768px) {
+        transform: none;
+      }
+    }
+  }
+
+  .education__header-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .education__period {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  .education__title {
+    font-size: var(--size-xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text);
+  }
+
+  .education__institution-box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .education__field {
+    display: inline-block;
+    font-size: var(--size-sm);
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  .education__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    transition: all 0.25s ease;
+    width: fit-content;
+
+    &:hover {
+      gap: 0.75rem;
+      color: var(--color-accent);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  .education__description {
+    font-size: var(--size-sm);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+</style>

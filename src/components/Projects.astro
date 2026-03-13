@@ -1,0 +1,247 @@
+---
+/**
+ * Projects Section Component
+ * Grid of projects with tags and links
+ */
+
+import { portfolioData } from '../data/portfolio';
+
+const { projects } = portfolioData;
+
+const externalLinkIcon = 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14l8.5-8.5';
+const arrowIcon = 'M5 12h14M12 5l7 7-7 7';
+---
+
+{
+  projects.length > 0 && (
+    <section id="projects" class="projects section">
+      <div class="container">
+        <div class="projects__header">
+          <h2>Projects</h2>
+          <p>Selected works and implementations</p>
+        </div>
+
+        <div class="projects__grid">
+          {projects.map((project, index) => (
+            <div class="projects__card animate-scroll" style=`animation-delay: ${index * 0.1}s`>
+              <div class="projects__card-watermark">{String(index + 1).padStart(2, '0')}</div>
+
+              <div class="projects__card-bar"></div>
+
+              <h3 class="projects__title">
+                {project.url ? (
+                  <a href={project.url} target="_blank" rel="noopener noreferrer" class="projects__title-link">
+                    <span>{project.title}</span>
+                    <svg viewBox="0 0 24 24">
+                      <path d={externalLinkIcon} />
+                    </svg>
+                  </a>
+                ) : (
+                  <span>{project.title}</span>
+                )}
+              </h3>
+
+              <p class="projects__description">{project.description}</p>
+
+              <div class="projects__tags">
+                {project.technologies.map((tech) => (
+                  <span class="projects__tag">{tech}</span>
+                ))}
+              </div>
+
+              <button class="projects__button">
+                <span>View Project</span>
+                <svg viewBox="0 0 24 24">
+                  <path d={arrowIcon} />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .projects {
+    background: linear-gradient(135deg, rgba(10, 15, 30, 0.5), rgba(20, 29, 47, 0.5));
+  }
+
+  .projects__header {
+    text-align: center;
+    margin-bottom: var(--spacing-4xl);
+    animation: slideInUp 0.6s ease-out;
+
+    h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: var(--spacing-md);
+      background: var(--gradient-text);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      font-size: var(--size-lg);
+      color: var(--color-text-secondary);
+    }
+  }
+
+  .projects__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--spacing-xl);
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-lg);
+    }
+  }
+
+  .projects__card {
+    position: relative;
+    padding: var(--spacing-lg);
+    background: rgba(15, 22, 41, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    html[data-theme='light'] & {
+      background: rgba(241, 245, 249, 0.4);
+    }
+
+    &.visible {
+      animation: slideInUp 0.6s ease-out forwards;
+    }
+
+    &:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+      transform: translateY(-4px);
+
+      .projects__card-bar {
+        opacity: 1;
+      }
+    }
+  }
+
+  .projects__card-watermark {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 3rem;
+    font-family: var(--font-mono);
+    font-weight: 900;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .projects__card-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .projects__title {
+    font-size: var(--size-lg);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    margin-top: var(--spacing-md);
+  }
+
+  .projects__title-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text);
+    transition: color 0.25s ease;
+
+    &:hover {
+      color: var(--color-primary);
+
+      svg {
+        transform: translateX(2px);
+      }
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.25s ease;
+    }
+  }
+
+  .projects__description {
+    flex: 1;
+    font-size: var(--size-sm);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .projects__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .projects__tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+
+  .projects__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    color: var(--color-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    width: fit-content;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+      gap: 0.75rem;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+</style>
